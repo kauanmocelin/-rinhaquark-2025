@@ -1,4 +1,4 @@
-package dev.kauanmocelin.payments.client;
+package dev.kauanmocelin.rinhaquark.payments.client;
 
 import jakarta.validation.Valid;
 import jakarta.ws.rs.POST;

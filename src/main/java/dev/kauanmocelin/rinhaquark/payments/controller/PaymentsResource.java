@@ -1,9 +1,9 @@
-package dev.kauanmocelin.payments.controller;
+package dev.kauanmocelin.rinhaquark.payments.controller;
 
-import dev.kauanmocelin.payments.controller.dto.PaymentRequest;
-import dev.kauanmocelin.payments.controller.dto.PaymentSummaryResponse;
-import dev.kauanmocelin.usecase.ProcessPayment;
-import dev.kauanmocelin.usecase.SummaryPayment;
+import dev.kauanmocelin.rinhaquark.payments.controller.dto.PaymentRequest;
+import dev.kauanmocelin.rinhaquark.payments.controller.dto.PaymentSummaryResponse;
+import dev.kauanmocelin.rinhaquark.payments.usecase.ProcessPayment;
+import dev.kauanmocelin.rinhaquark.payments.usecase.SummaryPayment;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.GET;

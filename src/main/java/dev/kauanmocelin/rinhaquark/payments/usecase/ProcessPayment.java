@@ -1,10 +1,10 @@
-package dev.kauanmocelin.usecase;
+package dev.kauanmocelin.rinhaquark.payments.usecase;
 
-import dev.kauanmocelin.payments.client.DefaultPaymentProcessorClient;
-import dev.kauanmocelin.payments.client.ProcessPaymentRequest;
-import dev.kauanmocelin.payments.controller.dto.PaymentRequest;
-import dev.kauanmocelin.repository.Payment;
-import dev.kauanmocelin.repository.PaymentRepository;
+import dev.kauanmocelin.rinhaquark.payments.client.DefaultPaymentProcessorClient;
+import dev.kauanmocelin.rinhaquark.payments.client.ProcessPaymentRequest;
+import dev.kauanmocelin.rinhaquark.payments.controller.dto.PaymentRequest;
+import dev.kauanmocelin.rinhaquark.payments.repository.Payment;
+import dev.kauanmocelin.rinhaquark.payments.repository.PaymentRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 

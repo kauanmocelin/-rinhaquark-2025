@@ -1,7 +1,7 @@
 package dev.kauanmocelin.payments.controller.client;
 
-import dev.kauanmocelin.payments.client.DefaultPaymentProcessorClient;
-import dev.kauanmocelin.payments.client.ProcessPaymentRequest;
+import dev.kauanmocelin.rinhaquark.payments.client.DefaultPaymentProcessorClient;
+import dev.kauanmocelin.rinhaquark.payments.client.ProcessPaymentRequest;
 import io.quarkus.test.junit.QuarkusTest;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.junit.jupiter.api.Test;

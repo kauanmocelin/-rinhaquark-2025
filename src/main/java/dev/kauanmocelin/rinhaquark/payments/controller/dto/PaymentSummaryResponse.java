@@ -1,4 +1,4 @@
-package dev.kauanmocelin.payments.controller.dto;
+package dev.kauanmocelin.rinhaquark.payments.controller.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;

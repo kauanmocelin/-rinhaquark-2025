@@ -1,4 +1,4 @@
-package dev.kauanmocelin.repository;
+package dev.kauanmocelin.rinhaquark.payments.repository;
 
 
 import io.quarkus.mongodb.panache.common.MongoEntity;

@@ -1,7 +1,7 @@
 package dev.kauanmocelin.payments.controller.client;
 
-import dev.kauanmocelin.payments.client.FallbackPaymentProcessorClient;
-import dev.kauanmocelin.payments.client.ProcessPaymentRequest;
+import dev.kauanmocelin.rinhaquark.payments.client.FallbackPaymentProcessorClient;
+import dev.kauanmocelin.rinhaquark.payments.client.ProcessPaymentRequest;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.rest.client.inject.RestClient;

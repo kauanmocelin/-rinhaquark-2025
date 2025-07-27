@@ -1,8 +1,8 @@
-package dev.kauanmocelin.usecase;
+package dev.kauanmocelin.rinhaquark.payments.usecase;
 
-import dev.kauanmocelin.payments.controller.dto.PaymentSummary;
-import dev.kauanmocelin.payments.controller.dto.PaymentSummaryResponse;
-import dev.kauanmocelin.repository.PaymentRepository;
+import dev.kauanmocelin.rinhaquark.payments.controller.dto.PaymentSummary;
+import dev.kauanmocelin.rinhaquark.payments.controller.dto.PaymentSummaryResponse;
+import dev.kauanmocelin.rinhaquark.payments.repository.PaymentRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.bson.Document;
 import org.bson.types.Decimal128;

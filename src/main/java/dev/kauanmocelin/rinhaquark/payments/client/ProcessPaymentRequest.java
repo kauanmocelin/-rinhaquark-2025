@@ -1,4 +1,4 @@
-package dev.kauanmocelin.payments.client;
+package dev.kauanmocelin.rinhaquark.payments.client;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;

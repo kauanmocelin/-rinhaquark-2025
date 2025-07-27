@@ -1,4 +1,4 @@
-package dev.kauanmocelin.repository;
+package dev.kauanmocelin.rinhaquark.payments.repository;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
