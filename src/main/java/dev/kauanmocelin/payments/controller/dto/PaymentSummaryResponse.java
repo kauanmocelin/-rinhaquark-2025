@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 public record PaymentSummaryResponse(
     @JsonProperty("default")
     @NotNull
-    PaymentSummary _default,
+    PaymentSummary defaultValue,
 
     @NotNull
     PaymentSummary fallback

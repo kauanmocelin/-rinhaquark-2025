@@ -3,7 +3,6 @@ package dev.kauanmocelin.payments.controller.client;
 import dev.kauanmocelin.payments.client.DefaultPaymentProcessorClient;
 import dev.kauanmocelin.payments.client.ProcessPaymentRequest;
 import io.quarkus.test.junit.QuarkusTest;
-import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.junit.jupiter.api.Test;
 
@@ -27,9 +26,8 @@ class DefaultPaymentProcessorClientTest {
             Instant.now()
         );
 
-        Response response = client.processPayment(request);
+        final var response = client.processPayment(request);
 
-        assertThat(response.getStatus()).isEqualTo(200);
-        assertThat(response.readEntity(String.class)).contains("\"message\":\"payment processed successfully\"");
+        assertThat(response).contains("\"message\":\"payment processed successfully\"");
     }
 }
