@@ -1,0 +1,20 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets: [ 'prometheus:9090' ]
+  - job_name: 'rinhaquark'
+    scrape_interval: 5s
+    metrics_path: '/q/metrics'
+    static_configs:
+      - targets: [ 'rinhaquark2025-a:8080' ]
+        labels:
+          app: rinhaquark
+          instance_name: rinhaquark-a
+      - targets: [ 'rinhaquark2025-b:8080' ]
+        labels:
+          app: rinhaquark
+          instance_name: rinhaquark-b

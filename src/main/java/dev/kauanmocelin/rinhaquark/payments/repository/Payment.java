@@ -12,10 +12,11 @@ import java.util.UUID;
 @MongoEntity(collection = "payments")
 public class Payment {
 
-    public Payment(UUID correlationId, BigDecimal amount, Instant requestedAt) {
+    public Payment(UUID correlationId, BigDecimal amount, Instant requestedAt, PaymentProcessorType paymentProcessorType) {
         this.correlationId = correlationId;
         this.amount = amount;
         this.requestedAt = requestedAt;
+        this.paymentProcessorType = paymentProcessorType;
     }
 
     public Payment() {
@@ -28,4 +29,5 @@ public class Payment {
     public BigDecimal amount;
     @NotNull
     public Instant requestedAt;
+    public PaymentProcessorType paymentProcessorType;
 }

@@ -25,7 +25,9 @@ class PaymentsResourceTest {
 
         Response response = given()
             .contentType(ContentType.JSON)
+            .log().all()
             .body(json)
+            .log().all()
             .post("/payments");
 
         assertThat(response.statusCode()).isEqualTo(204);

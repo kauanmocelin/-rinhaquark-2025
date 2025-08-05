@@ -4,6 +4,7 @@ import dev.kauanmocelin.rinhaquark.payments.controller.dto.PaymentRequest;
 import dev.kauanmocelin.rinhaquark.payments.controller.dto.PaymentSummaryResponse;
 import dev.kauanmocelin.rinhaquark.payments.usecase.ProcessPayment;
 import dev.kauanmocelin.rinhaquark.payments.usecase.SummaryPayment;
+import io.smallrye.mutiny.Uni;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.GET;
@@ -27,14 +28,18 @@ public class PaymentsResource {
 
     @Path("/payments")
     @POST
-    public Response processPayment(@Valid final PaymentRequest paymentRequest) {
-        processPayment.execute(paymentRequest);
-        return Response.noContent().build();
+    public Uni<Response> processPayment(@Valid final PaymentRequest paymentRequest) {
+        return processPayment.addQueue(paymentRequest);
+        /*return processPayment.execute(paymentRequest)
+            .onItem().transform(v -> Response.noContent().build())
+            .onFailure().recoverWithItem(t -> {
+                return Response.status(503).build();
+            });*/
     }
 
     @Path("/payments-summary")
     @GET
-    public PaymentSummaryResponse getPaymentsSummary(@NotNull @RestQuery Instant from, @NotNull @RestQuery Instant to) {
+    public Uni<PaymentSummaryResponse> getPaymentsSummary(@NotNull @RestQuery Instant from, @NotNull @RestQuery Instant to) {
         return summaryPayment.execute(from, to);
     }
 }
