@@ -23,7 +23,7 @@ public class PaymentQueueConsumer {
     private static final Logger LOG = Logger.getLogger(PaymentQueueConsumer.class);
 
     void onStart(@Observes StartupEvent ev) {
-        int threadCount = 2;
+        int threadCount = 10;
 
         for (int i = 0; i < threadCount; i++) {
             Thread consumerThread = new Thread(this::consumeLoop, "queue-consumer-" + i);
@@ -37,12 +37,10 @@ public class PaymentQueueConsumer {
         AtomicInteger consumed = new AtomicInteger(0);
 
         while (true) {
-            ProcessPaymentRequest request = queue.poll();
+            ProcessPaymentRequest request = queue.take();
 
             if (request != null) {
-                processPayment.execute(request).subscribe().with(unused -> {
-                }, failure -> {
-                });
+                processPayment.execute(request);
             } else {
                 try {
                     Thread.sleep(10);
