@@ -19,7 +19,7 @@ services:
           memory: "30MB"
 
   rinhaquark2025-a:
-    image: kauanmocelin/rinhaquark2025:latest
+    image: kauanmocelin/rinhaquark2025:1.0.1
     container_name: rinhaquark2025-a
     environment:
       - QUARKUS_MONGODB_CONNECTION_STRING=mongodb://mongo:27017
@@ -36,7 +36,7 @@ services:
           memory: "70MB"
 
   rinhaquark2025-b:
-    image: kauanmocelin/rinhaquark2025:latest
+    image: kauanmocelin/rinhaquark2025:1.0.1
     container_name: rinhaquark2025-b
     environment:
       - QUARKUS_MONGODB_CONNECTION_STRING=mongodb://mongo:27017
