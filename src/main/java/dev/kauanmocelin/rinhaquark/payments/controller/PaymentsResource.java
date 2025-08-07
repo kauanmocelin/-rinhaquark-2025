@@ -6,7 +6,6 @@ import dev.kauanmocelin.rinhaquark.payments.usecase.ProcessPayment;
 import dev.kauanmocelin.rinhaquark.payments.usecase.SummaryPayment;
 import io.smallrye.mutiny.Uni;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -41,7 +40,7 @@ public class PaymentsResource {
 
     @Path("/payments-summary")
     @GET
-    public PaymentSummaryResponse getPaymentsSummary(@NotNull @RestQuery Instant from, @NotNull @RestQuery Instant to) {
+    public PaymentSummaryResponse getPaymentsSummary(@RestQuery Instant from, @RestQuery Instant to) {
         return summaryPayment.execute(from, to);
     }
 }

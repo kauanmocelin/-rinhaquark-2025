@@ -12,8 +12,11 @@ services:
       - rinhaquark2025-b
     networks:
       - rinhaquark-rede
-    mem_limit: 30m
-    cpus: 0.2
+    deploy:
+      resources:
+        limits:
+          cpus: "0.2"
+          memory: "30MB"
 
   rinhaquark2025-a:
     image: kauanmocelin/rinhaquark2025:latest
@@ -26,8 +29,11 @@ services:
     networks:
       - rinhaquark-rede
       - payment-processor
-    mem_limit: 70m
-    cpus: 0.5
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "70MB"
 
   rinhaquark2025-b:
     image: kauanmocelin/rinhaquark2025:latest
@@ -40,8 +46,11 @@ services:
     networks:
       - rinhaquark-rede
       - payment-processor
-    mem_limit: 70m
-    cpus: 0.5
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "70MB"
 
   mongo:
     image: mongo:6.0
@@ -52,8 +61,11 @@ services:
       - mongo-data:/data/db
     networks:
       - rinhaquark-rede
-    mem_limit: 180m
-    cpus: 0.3
+    deploy:
+      resources:
+        limits:
+          cpus: "0.3"
+          memory: "180MB"
     healthcheck:
       test: [ "CMD-SHELL", "echo 'db.runCommand(\"ping\").ok' | mongosh localhost:27017/test --quiet" ]
       interval: 5s
