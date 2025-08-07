@@ -1,0 +1,3 @@
+/home/kauan/Projects/rinhaquark-2025/src/test/java/dev/kauanmocelin/payments/controller/PaymentsResourceTest.java
+/home/kauan/Projects/rinhaquark-2025/src/test/java/dev/kauanmocelin/payments/controller/client/DefaultPaymentProcessorClientTest.java
+/home/kauan/Projects/rinhaquark-2025/src/test/java/dev/kauanmocelin/payments/controller/client/FallbackPaymentProcessorClientTest.java

@@ -2,12 +2,14 @@ package dev.kauanmocelin.rinhaquark.payments.usecase;
 
 import dev.kauanmocelin.rinhaquark.payments.client.ProcessPaymentRequest;
 import io.quarkus.runtime.Startup;
-import io.quarkus.runtime.StartupEvent;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 import org.jboss.logging.Logger;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Startup
@@ -20,35 +22,40 @@ public class PaymentQueueConsumer {
     @Inject
     ProcessPayment processPayment;
 
+    private ExecutorService executor;
+    private final int threadCount = 4;
+
     private static final Logger LOG = Logger.getLogger(PaymentQueueConsumer.class);
 
-    void onStart(@Observes StartupEvent ev) {
-        int threadCount = 10;
+    @PostConstruct
+    void onStart() {
+//        executor = Executors.newFixedThreadPool(threadCount);
+        executor = Executors.newVirtualThreadPerTaskExecutor();
 
         for (int i = 0; i < threadCount; i++) {
-            Thread consumerThread = new Thread(this::consumeLoop, "queue-consumer-" + i);
-            consumerThread.setDaemon(true);
-            consumerThread.start();
+            int threadIndex = i; // para nomear a thread
+            executor.submit(() -> {
+                Thread.currentThread().setName("queue-consumer-" + threadIndex);
+                consumeLoop();
+            });
         }
     }
 
 
     private void consumeLoop() {
         AtomicInteger consumed = new AtomicInteger(0);
-
         while (true) {
             ProcessPaymentRequest request = queue.take();
-
             if (request != null) {
                 processPayment.execute(request);
-            } else {
-                try {
-                    Thread.sleep(10);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    break;
-                }
             }
+        }
+    }
+
+    @PreDestroy
+    void onStop() {
+        if (executor != null) {
+            executor.shutdownNow();
         }
     }
 }

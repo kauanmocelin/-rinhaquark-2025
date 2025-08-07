@@ -15,7 +15,7 @@ public class InMemoryQueue {
 
     public void add(ProcessPaymentRequest request) {
         queue.add(request);
-        LOG.infof("📥 Added request to queue. Current queue size: %d", queue.size());
+//        LOG.infof("📥 Added request to queue. Current queue size: %d", queue.size());
     }
 
     public ProcessPaymentRequest take() {
@@ -27,10 +27,6 @@ public class InMemoryQueue {
         }
         LOG.infof("📤 Consumed request from queue. Remaining: %d", queue.size());
         return req;
-    }
-
-    public boolean isEmpty() {
-        return queue.isEmpty();
     }
 
     public int size() {

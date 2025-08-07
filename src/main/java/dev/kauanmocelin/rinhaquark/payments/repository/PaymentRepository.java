@@ -6,6 +6,7 @@ import io.quarkus.mongodb.panache.PanacheMongoRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.bson.Document;
+import org.jboss.logging.Logger;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -40,6 +41,16 @@ public class PaymentRepository implements PanacheMongoRepository<Payment> {
                 .append("_id", 0))
         );
 
-        return collection.aggregate(pipeline).into(new ArrayList<>());
+        long start = System.nanoTime();
+        List<Document> result = collection.aggregate(pipeline).into(new ArrayList<>());
+        long end = System.nanoTime();
+
+        long durationMs = (end - start) / 1_000_000;
+
+        Logger LOG = Logger.getLogger("QueryLogger");
+//        LOG.infof("🔍 Aggregation took %d ms for range %s to %s", durationMs, from, to);
+
+        return result;
     }
+
 }

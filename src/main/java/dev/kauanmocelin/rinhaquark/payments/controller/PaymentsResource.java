@@ -4,6 +4,7 @@ import dev.kauanmocelin.rinhaquark.payments.controller.dto.PaymentRequest;
 import dev.kauanmocelin.rinhaquark.payments.controller.dto.PaymentSummaryResponse;
 import dev.kauanmocelin.rinhaquark.payments.usecase.ProcessPayment;
 import dev.kauanmocelin.rinhaquark.payments.usecase.SummaryPayment;
+import io.smallrye.mutiny.Uni;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.GET;
@@ -27,9 +28,15 @@ public class PaymentsResource {
 
     @Path("/payments")
     @POST
-    public Response processPayment(@Valid final PaymentRequest paymentRequest) {
+    /*public Response processPayment(@Valid final PaymentRequest paymentRequest) {
         processPayment.addQueue(paymentRequest);
         return Response.ok().build();
+    }*/
+    public Uni<Response> processPayment(@Valid PaymentRequest paymentRequest) {
+        return Uni.createFrom().item(() -> {
+            processPayment.addQueue(paymentRequest);
+            return Response.ok().build();
+        });
     }
 
     @Path("/payments-summary")

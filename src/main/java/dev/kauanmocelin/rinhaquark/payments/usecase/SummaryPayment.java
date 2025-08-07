@@ -6,6 +6,7 @@ import dev.kauanmocelin.rinhaquark.payments.repository.PaymentRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.bson.Document;
 import org.bson.types.Decimal128;
+import org.jboss.logging.Logger;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -16,6 +17,8 @@ import java.util.stream.Collectors;
 @ApplicationScoped
 public class SummaryPayment {
 
+    private static final Logger LOG = Logger.getLogger(SummaryPayment.class.getName());
+
     private final PaymentRepository paymentRepository;
 
     public SummaryPayment(PaymentRepository paymentRepository) {
@@ -23,6 +26,7 @@ public class SummaryPayment {
     }
 
     public PaymentSummaryResponse execute(final Instant from, final Instant to) {
+        LOG.info("⏱️ Executing summary from=" + from + " to=" + to);
 
         List<Document> summaryPayments = paymentRepository.summaryPayments(from, to);
 
@@ -37,6 +41,8 @@ public class SummaryPayment {
 
         PaymentSummary defaultSummary = map.getOrDefault("default", new PaymentSummary(0, BigDecimal.ZERO));
         PaymentSummary fallbackSummary = map.getOrDefault("fallback", new PaymentSummary(0, BigDecimal.ZERO));
+
+        LOG.info("✅ Summary result -> default: " + defaultSummary + " | fallback: \n" + fallbackSummary);
 
         return new PaymentSummaryResponse(defaultSummary, fallbackSummary);
     }

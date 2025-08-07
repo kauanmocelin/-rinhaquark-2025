@@ -1,0 +1,15 @@
+/home/kauan/Projects/rinhaquark-2025/src/main/java/dev/kauanmocelin/rinhaquark/payments/MongoIndexInitializer.java
+/home/kauan/Projects/rinhaquark-2025/src/main/java/dev/kauanmocelin/rinhaquark/payments/client/DefaultPaymentProcessorClient.java
+/home/kauan/Projects/rinhaquark-2025/src/main/java/dev/kauanmocelin/rinhaquark/payments/client/FallbackPaymentProcessorClient.java
+/home/kauan/Projects/rinhaquark-2025/src/main/java/dev/kauanmocelin/rinhaquark/payments/client/ProcessPaymentRequest.java
+/home/kauan/Projects/rinhaquark-2025/src/main/java/dev/kauanmocelin/rinhaquark/payments/controller/PaymentsResource.java
+/home/kauan/Projects/rinhaquark-2025/src/main/java/dev/kauanmocelin/rinhaquark/payments/controller/dto/PaymentRequest.java
+/home/kauan/Projects/rinhaquark-2025/src/main/java/dev/kauanmocelin/rinhaquark/payments/controller/dto/PaymentSummary.java
+/home/kauan/Projects/rinhaquark-2025/src/main/java/dev/kauanmocelin/rinhaquark/payments/controller/dto/PaymentSummaryResponse.java
+/home/kauan/Projects/rinhaquark-2025/src/main/java/dev/kauanmocelin/rinhaquark/payments/repository/Payment.java
+/home/kauan/Projects/rinhaquark-2025/src/main/java/dev/kauanmocelin/rinhaquark/payments/repository/PaymentProcessorType.java
+/home/kauan/Projects/rinhaquark-2025/src/main/java/dev/kauanmocelin/rinhaquark/payments/repository/PaymentRepository.java
+/home/kauan/Projects/rinhaquark-2025/src/main/java/dev/kauanmocelin/rinhaquark/payments/usecase/InMemoryQueue.java
+/home/kauan/Projects/rinhaquark-2025/src/main/java/dev/kauanmocelin/rinhaquark/payments/usecase/PaymentQueueConsumer.java
+/home/kauan/Projects/rinhaquark-2025/src/main/java/dev/kauanmocelin/rinhaquark/payments/usecase/ProcessPayment.java
+/home/kauan/Projects/rinhaquark-2025/src/main/java/dev/kauanmocelin/rinhaquark/payments/usecase/SummaryPayment.java

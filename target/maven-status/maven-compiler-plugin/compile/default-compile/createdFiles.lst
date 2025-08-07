@@ -1,0 +1,15 @@
+dev/kauanmocelin/rinhaquark/payments/client/DefaultPaymentProcessorClient.class
+dev/kauanmocelin/rinhaquark/payments/repository/Payment.class
+dev/kauanmocelin/rinhaquark/payments/controller/dto/PaymentRequest.class
+dev/kauanmocelin/rinhaquark/payments/usecase/SummaryPayment.class
+dev/kauanmocelin/rinhaquark/payments/controller/dto/PaymentSummary.class
+dev/kauanmocelin/rinhaquark/payments/repository/PaymentRepository.class
+dev/kauanmocelin/rinhaquark/payments/usecase/PaymentQueueConsumer.class
+dev/kauanmocelin/rinhaquark/payments/usecase/ProcessPayment.class
+dev/kauanmocelin/rinhaquark/payments/client/ProcessPaymentRequest.class
+dev/kauanmocelin/rinhaquark/payments/controller/dto/PaymentSummaryResponse.class
+dev/kauanmocelin/rinhaquark/payments/controller/PaymentsResource.class
+dev/kauanmocelin/rinhaquark/payments/MongoIndexInitializer.class
+dev/kauanmocelin/rinhaquark/payments/repository/PaymentProcessorType.class
+dev/kauanmocelin/rinhaquark/payments/usecase/InMemoryQueue.class
+dev/kauanmocelin/rinhaquark/payments/client/FallbackPaymentProcessorClient.class
