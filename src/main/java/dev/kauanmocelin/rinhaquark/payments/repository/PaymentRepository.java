@@ -1,56 +1,74 @@
 package dev.kauanmocelin.rinhaquark.payments.repository;
 
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoCollection;
-import io.quarkus.mongodb.panache.PanacheMongoRepository;
+import dev.kauanmocelin.rinhaquark.payments.controller.dto.PaymentSummary;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import org.bson.Document;
-import org.jboss.logging.Logger;
 
+import javax.sql.DataSource;
+import java.sql.*;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @ApplicationScoped
-public class PaymentRepository implements PanacheMongoRepository<Payment> {
+public class PaymentRepository {
 
     @Inject
-    MongoClient mongoClient;
+    DataSource dataSource;
 
-    public void createPayment(final Payment payment) {
-        persist(payment);
+    public List<PaymentSummary> summaryPayments(final Instant from, final Instant to) {
+        String sql = """
+            SELECT payment_processor_type AS type,
+                   COUNT(*) AS total_requests,
+                   SUM(amount) AS total_amount
+            FROM payments
+            WHERE requested_at >= ? AND requested_at <= ?
+            GROUP BY payment_processor_type
+            """;
+        List<PaymentSummary> summaries = new ArrayList<>();
+        try (Connection conn = dataSource.getConnection()) {
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setTimestamp(1, Timestamp.from(from));
+                ps.setTimestamp(2, Timestamp.from(to));
+
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        summaries.add(new PaymentSummary(
+                            rs.getString("type"),
+                            rs.getInt("total_requests"),
+                            rs.getBigDecimal("total_amount")
+                        ));
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error querying payment summary", e);
+        }
+
+        return summaries;
     }
 
+    public void createPaymentsBatch(List<Payment> paymentsBatch) {
+        String sql = """
+            INSERT INTO payments (correlation_id, requested_at, payment_processor_type, amount)
+            VALUES (?, ?, ?, ?)
+            """;
+        try (Connection conn = dataSource.getConnection()) {
+            conn.setAutoCommit(false);
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                for (Payment payment : paymentsBatch) {
+                    ps.setObject(1, payment.correlationId);
+                    ps.setTimestamp(2, Timestamp.from(payment.requestedAt));
+                    ps.setString(3, payment.paymentProcessorType != null ? payment.paymentProcessorType.name() : null);
+                    ps.setBigDecimal(4, payment.amount);
+                    ps.addBatch();
+                }
 
-    public List<Document> summaryPayments(final Instant from, final Instant to) {
-        MongoCollection<Document> collection = mongoClient
-            .getDatabase("payments_db")
-            .getCollection("payments");
-
-        List<Document> pipeline = Arrays.asList(
-            new Document("$match", new Document("requestedAt",
-                new Document("$gte", from).append("$lte", to))),
-            new Document("$group", new Document("_id", "$paymentProcessorType")
-                .append("totalRequests", new Document("$sum", 1))
-                .append("totalAmount", new Document("$sum", "$amount"))),
-            new Document("$project", new Document("type", "$_id")
-                .append("totalRequests", 1)
-                .append("totalAmount", 1)
-                .append("_id", 0))
-        );
-
-        long start = System.nanoTime();
-        List<Document> result = collection.aggregate(pipeline).into(new ArrayList<>());
-        long end = System.nanoTime();
-
-        long durationMs = (end - start) / 1_000_000;
-
-        Logger LOG = Logger.getLogger("QueryLogger");
-//        LOG.infof("🔍 Aggregation took %d ms for range %s to %s", durationMs, from, to);
-
-        return result;
+                int[] results = ps.executeBatch();
+            }
+            conn.commit();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao inserir batch de pagamentos", e);
+        }
     }
-
 }

@@ -1,6 +1,0 @@
-FROM eclipse-temurin:21-jre
-WORKDIR /app
-
-COPY target/rinhaquark-2025-1.0.0-SNAPSHOT-runner /app/
-
-CMD ["./rinhaquark-2025-1.0.0-SNAPSHOT-runner"]

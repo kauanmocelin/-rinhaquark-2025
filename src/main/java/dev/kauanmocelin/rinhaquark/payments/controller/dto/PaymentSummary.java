@@ -1,16 +1,10 @@
 package dev.kauanmocelin.rinhaquark.payments.controller.dto;
 
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-
 import java.math.BigDecimal;
 
 public record PaymentSummary(
-    @NotNull
-    @Positive
+    String type,
     Integer totalRequests,
-    @NotNull
-    @Positive
     BigDecimal totalAmount
 ) {
 }

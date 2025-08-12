@@ -2,89 +2,92 @@ package dev.kauanmocelin.rinhaquark.payments.usecase;
 
 import dev.kauanmocelin.rinhaquark.payments.client.DefaultPaymentProcessorClient;
 import dev.kauanmocelin.rinhaquark.payments.client.FallbackPaymentProcessorClient;
-import dev.kauanmocelin.rinhaquark.payments.client.ProcessPaymentRequest;
+import dev.kauanmocelin.rinhaquark.payments.controller.ProcessPaymentRequest;
 import dev.kauanmocelin.rinhaquark.payments.controller.dto.PaymentRequest;
+import dev.kauanmocelin.rinhaquark.payments.infra.PaymentBatchService;
+import dev.kauanmocelin.rinhaquark.payments.infra.PaymentQueue;
 import dev.kauanmocelin.rinhaquark.payments.repository.Payment;
 import dev.kauanmocelin.rinhaquark.payments.repository.PaymentProcessorType;
-import dev.kauanmocelin.rinhaquark.payments.repository.PaymentRepository;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
-import org.jboss.logging.Logger;
 
 import java.time.Instant;
 
 @ApplicationScoped
 public final class ProcessPayment {
 
-    private static final Logger LOG = Logger.getLogger(ProcessPayment.class);
-
-    private final PaymentRepository paymentRepository;
+    private final PaymentQueue queue;
+    private final PaymentBatchService paymentBatchService;
     @RestClient
     DefaultPaymentProcessorClient defaultPaymentProcessorClient;
     @RestClient
     FallbackPaymentProcessorClient fallbackPaymentProcessorClient;
-    @Inject
-    InMemoryQueue queue;
 
-    public ProcessPayment(PaymentRepository paymentRepository) {
-        this.paymentRepository = paymentRepository;
+
+    public ProcessPayment(PaymentQueue queue, PaymentBatchService paymentBatchService) {
+        this.queue = queue;
+        this.paymentBatchService = paymentBatchService;
     }
 
-    public void addQueue(final PaymentRequest paymentRequest) {
-        long start = System.nanoTime();
-
+    public void registerPayment(final PaymentRequest paymentRequest) {
         final ProcessPaymentRequest processPaymentRequest = new ProcessPaymentRequest(
             paymentRequest.correlationId(),
             paymentRequest.amount(),
             Instant.now()
         );
-        queue.add(processPaymentRequest);
-
-        long end = System.nanoTime();
-        long durationMs = (end - start) / 1_000_000;
-
-        if (durationMs > 10) {
-//            LOG.warnf("⚠️ addQueue took %d ms for correlationId=%s", durationMs, paymentRequest.correlationId());
-        }
+        queue.enqueue(processPaymentRequest);
     }
 
-    //    @Retry(maxRetries = 10, delay = 100, delayUnit = ChronoUnit.MILLIS)
-//    @Timeout(value = 200)
     public void execute(final ProcessPaymentRequest processPaymentRequest) {
-        final long startTime = System.nanoTime();
-        for (int i = 1; i <= 15; i++) {
+        int maxRetriesDefault = 8;
+        int maxRetriesFallback = 2;
+        long backoffMillisDefault = 100;
+        long maxBackoffDefault = 2000;
+
+        long backoffMillisFallback = 500;
+        long maxBackoffFallback = 3000;
+
+        for (int i = 0; i < maxRetriesDefault; i++) {
             try {
                 defaultPaymentProcessorClient.processPayment(processPaymentRequest);
-                paymentRepository.createPayment(new Payment(
+                paymentBatchService.enqueuePayment(new Payment(
                     processPaymentRequest.correlationId(),
                     processPaymentRequest.amount(),
                     processPaymentRequest.requestedAt(),
                     PaymentProcessorType.DEFAULT
                 ));
-                long durationMs = (System.nanoTime() - startTime) / 1_000_000;
-//                LOG.infof("✅ API default-processor respondeu em %d ms", durationMs);
                 return;
             } catch (Exception e) {
-                long durationMs = (System.nanoTime() - startTime) / 1_000_000;
-//                LOG.warnf("❌ API default-processor falhou após %d ms", durationMs, e);
+                try {
+                    Thread.sleep(backoffMillisDefault);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    return;
+                }
+                backoffMillisDefault = Math.min(backoffMillisDefault * 2, maxBackoffDefault);
             }
         }
 
-        try {
-//            LOG.warn("Fallback payment processor called for correlationId: " + processPaymentRequest.correlationId());
-            fallbackPaymentProcessorClient.processPayment(processPaymentRequest);
-            paymentRepository.createPayment(new Payment(
-                processPaymentRequest.correlationId(),
-                processPaymentRequest.amount(),
-                processPaymentRequest.requestedAt(),
-                PaymentProcessorType.FALLBACK
-            ));
-            return;
-        } catch (Exception e) {
-//            LOG.warnf("Fallback processor also failed", e);
+        for (int i = 0; i < maxRetriesFallback; i++) {
+            try {
+                fallbackPaymentProcessorClient.processPayment(processPaymentRequest);
+                paymentBatchService.enqueuePayment(new Payment(
+                    processPaymentRequest.correlationId(),
+                    processPaymentRequest.amount(),
+                    processPaymentRequest.requestedAt(),
+                    PaymentProcessorType.FALLBACK
+                ));
+                return;
+            } catch (Exception e) {
+                try {
+                    Thread.sleep(backoffMillisFallback);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    return;
+                }
+                backoffMillisFallback = Math.min(backoffMillisFallback * 2, maxBackoffFallback);
+            }
         }
-
-        queue.add(processPaymentRequest);
+        queue.enqueue(processPaymentRequest);
     }
 }

@@ -4,8 +4,7 @@ import dev.kauanmocelin.rinhaquark.payments.controller.dto.PaymentRequest;
 import dev.kauanmocelin.rinhaquark.payments.controller.dto.PaymentSummaryResponse;
 import dev.kauanmocelin.rinhaquark.payments.usecase.ProcessPayment;
 import dev.kauanmocelin.rinhaquark.payments.usecase.SummaryPayment;
-import io.smallrye.mutiny.Uni;
-import jakarta.validation.Valid;
+import io.smallrye.common.annotation.NonBlocking;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -15,6 +14,7 @@ import org.jboss.resteasy.reactive.RestQuery;
 import java.time.Instant;
 
 @Path("")
+//@RunOnVirtualThread
 public class PaymentsResource {
 
     private final ProcessPayment processPayment;
@@ -27,20 +27,22 @@ public class PaymentsResource {
 
     @Path("/payments")
     @POST
-    /*public Response processPayment(@Valid final PaymentRequest paymentRequest) {
-        processPayment.addQueue(paymentRequest);
+    @NonBlocking
+    public Response processPayment(PaymentRequest paymentRequest) {
+        processPayment.registerPayment(paymentRequest);
         return Response.ok().build();
-    }*/
-    public Uni<Response> processPayment(@Valid PaymentRequest paymentRequest) {
-        return Uni.createFrom().item(() -> {
-            processPayment.addQueue(paymentRequest);
-            return Response.ok().build();
-        });
     }
 
     @Path("/payments-summary")
     @GET
     public PaymentSummaryResponse getPaymentsSummary(@RestQuery Instant from, @RestQuery Instant to) {
         return summaryPayment.execute(from, to);
+    }
+
+    @Path("/payments-sync")
+    @GET
+    public Response syncPaymentsDatabase() {
+        summaryPayment.sync();
+        return Response.ok().build();
     }
 }
