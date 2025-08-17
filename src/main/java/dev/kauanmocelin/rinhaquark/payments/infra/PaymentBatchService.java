@@ -2,6 +2,7 @@ package dev.kauanmocelin.rinhaquark.payments.infra;
 
 import dev.kauanmocelin.rinhaquark.payments.repository.Payment;
 import dev.kauanmocelin.rinhaquark.payments.repository.PaymentRepository;
+import io.quarkus.logging.Log;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -41,32 +42,42 @@ public class PaymentBatchService {
     }
 
     public void enqueuePayment(Payment payment) {
-        queue.offer(payment);
+        queue.add(payment);
     }
 
-    public void flushBatch() {
+/*    public void flushBatch() {
         List<Payment> batch = new ArrayList<>();
         queue.drainTo(batch);
 
         if (!batch.isEmpty()) {
             paymentRepository.createPaymentsBatch(batch);
         }
-    }
+    }*/
 
     private void processBatch() {
         List<Payment> batch = new ArrayList<>();
-        queue.drainTo(batch);
+        int queueSize = queue.size(); // tamanho antes de drenar
+        queue.drainTo(batch, batchSize);
 
         if (!batch.isEmpty()) {
+            Log.infof("Processing batch of size: %d, queue size before drain: %d", batch.size(), queueSize);
+
             worker.submit(() -> {
+                long start = System.currentTimeMillis();
                 try {
                     paymentRepository.createPaymentsBatch(batch);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Log.error("Error processing batch", e);
+                } finally {
+                    long duration = System.currentTimeMillis() - start;
+                    Log.infof("Batch of size %d processed in %d ms", batch.size(), duration);
                 }
             });
+        } else {
+            Log.infof("No payments to process, queue size: %d", queueSize);
         }
     }
+
 
     @PreDestroy
     void shutdown() {

@@ -50,6 +50,23 @@ public class PaymentQueueConsumer {
         }
     }
 
+/*    @PostConstruct
+    void onStart() {
+        executor = Executors.newVirtualThreadPerTaskExecutor();
+        Thread.ofVirtual().start(() -> {
+            while (running) {
+                try {
+                    ProcessPaymentRequest request = queue.dequeue();
+                    if (request != null) {
+                        executor.submit(() -> processPayment.execute(request));
+                    }
+                } catch (Exception e) {
+                    Log.error("Error polling queue", e);
+                }
+            }
+        });
+    }*/
+
     @PreDestroy
     void onStop() {
         running = false;

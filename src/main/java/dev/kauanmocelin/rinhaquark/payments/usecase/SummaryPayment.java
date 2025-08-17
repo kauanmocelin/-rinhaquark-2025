@@ -3,7 +3,6 @@ package dev.kauanmocelin.rinhaquark.payments.usecase;
 import dev.kauanmocelin.rinhaquark.payments.client.SyncPaymentsClient;
 import dev.kauanmocelin.rinhaquark.payments.controller.dto.PaymentSummary;
 import dev.kauanmocelin.rinhaquark.payments.controller.dto.PaymentSummaryResponse;
-import dev.kauanmocelin.rinhaquark.payments.infra.PaymentBatchService;
 import dev.kauanmocelin.rinhaquark.payments.repository.PaymentRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
@@ -20,19 +19,14 @@ import java.util.stream.Collectors;
 public class SummaryPayment {
 
     private final PaymentRepository paymentRepository;
-    private final PaymentBatchService paymentBatchService;
     @RestClient
     SyncPaymentsClient syncPaymentsClient;
 
-    public SummaryPayment(PaymentRepository paymentRepository, PaymentBatchService paymentBatchService) {
+    public SummaryPayment(PaymentRepository paymentRepository) {
         this.paymentRepository = paymentRepository;
-        this.paymentBatchService = paymentBatchService;
     }
 
     public PaymentSummaryResponse execute(final Instant from, final Instant to) {
-        syncPaymentsClient.syncPaymentsDatabase();
-        paymentBatchService.flushBatch();
-
         List<PaymentSummary> summaryPayments = new ArrayList<>();
         if (Objects.nonNull(from) && Objects.nonNull(to)) {
             summaryPayments = paymentRepository.summaryPayments(from, to);
@@ -48,9 +42,5 @@ public class SummaryPayment {
         PaymentSummary fallbackSummary = map.getOrDefault("fallback", new PaymentSummary("fallback", 0, BigDecimal.ZERO));
 
         return new PaymentSummaryResponse(defaultSummary, fallbackSummary);
-    }
-
-    public void sync() {
-        paymentBatchService.flushBatch();
     }
 }

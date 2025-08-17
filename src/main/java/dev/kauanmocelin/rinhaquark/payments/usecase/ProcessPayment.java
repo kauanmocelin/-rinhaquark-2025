@@ -8,6 +8,7 @@ import dev.kauanmocelin.rinhaquark.payments.infra.PaymentBatchService;
 import dev.kauanmocelin.rinhaquark.payments.infra.PaymentQueue;
 import dev.kauanmocelin.rinhaquark.payments.repository.Payment;
 import dev.kauanmocelin.rinhaquark.payments.repository.PaymentProcessorType;
+import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
@@ -23,24 +24,26 @@ public final class ProcessPayment {
     @RestClient
     FallbackPaymentProcessorClient fallbackPaymentProcessorClient;
 
-
     public ProcessPayment(PaymentQueue queue, PaymentBatchService paymentBatchService) {
         this.queue = queue;
         this.paymentBatchService = paymentBatchService;
     }
 
-    public void registerPayment(final PaymentRequest paymentRequest) {
-        final ProcessPaymentRequest processPaymentRequest = new ProcessPaymentRequest(
-            paymentRequest.correlationId(),
-            paymentRequest.amount(),
-            Instant.now()
-        );
-        queue.enqueue(processPaymentRequest);
+    public Uni<Void> registerPayment(final PaymentRequest paymentRequest) {
+        return Uni.createFrom().voidItem()
+            .invoke(() -> {
+                final ProcessPaymentRequest processPaymentRequest = new ProcessPaymentRequest(
+                    paymentRequest.correlationId(),
+                    paymentRequest.amount(),
+                    Instant.now()
+                );
+                queue.enqueue(processPaymentRequest);
+            });
     }
 
     public void execute(final ProcessPaymentRequest processPaymentRequest) {
-        int maxRetriesDefault = 8;
-        int maxRetriesFallback = 2;
+        int maxRetriesDefault = 10;
+        int maxRetriesFallback = 3;
         long backoffMillisDefault = 100;
         long maxBackoffDefault = 2000;
 

@@ -1,8 +1,8 @@
 x-rinhaquark2025: &rinhaquark2025
-  image: kauanmocelin/rinhaquark2025:1.0.20
+  image: kauanmocelin/rinhaquark2025:1.0.26
   environment:
-    - QUARKUS_PAYMENTS_BATCH_SIZE=300
-    - QUARKUS_PAYMENTS_BATCH_INTERVAL_MS=500
+    - QUARKUS_PAYMENTS_BATCH_SIZE=100
+    - QUARKUS_PAYMENTS_BATCH_INTERVAL_MS=20
     - QUARKUS_PAYMENTS_THREADS_NUMBER=20
   depends_on:
     postgres:
@@ -13,7 +13,7 @@ x-rinhaquark2025: &rinhaquark2025
   deploy:
     resources:
       limits:
-        cpus: "0.13"
+        cpus: "0.12"
         memory: "80MB"
 
 services:
@@ -39,14 +39,10 @@ services:
   rinhaquark2025-a:
     <<: *rinhaquark2025
     container_name: rinhaquark2025-a
-    environment:
-      - INTERNAL_SYNC_PAYMENTS_API=http://rinhaquark2025-b:8080
 
   rinhaquark2025-b:
     <<: *rinhaquark2025
     container_name: rinhaquark2025-b
-    environment:
-      - INTERNAL_SYNC_PAYMENTS_API=http://rinhaquark2025-a:8080
 
   postgres:
     image: postgres:17-alpine
@@ -60,6 +56,7 @@ services:
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
       - ./postgresql.conf:/etc/postgresql/postgresql.conf
+
     networks:
       - rinhaquark-rede
     command: [ "postgres", "-c", "config_file=/etc/postgresql/postgresql.conf" ]
