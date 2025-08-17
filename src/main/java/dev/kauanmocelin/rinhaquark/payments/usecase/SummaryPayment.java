@@ -1,11 +1,9 @@
 package dev.kauanmocelin.rinhaquark.payments.usecase;
 
-import dev.kauanmocelin.rinhaquark.payments.client.SyncPaymentsClient;
 import dev.kauanmocelin.rinhaquark.payments.controller.dto.PaymentSummary;
 import dev.kauanmocelin.rinhaquark.payments.controller.dto.PaymentSummaryResponse;
 import dev.kauanmocelin.rinhaquark.payments.repository.PaymentRepository;
 import jakarta.enterprise.context.ApplicationScoped;
-import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -19,8 +17,6 @@ import java.util.stream.Collectors;
 public class SummaryPayment {
 
     private final PaymentRepository paymentRepository;
-    @RestClient
-    SyncPaymentsClient syncPaymentsClient;
 
     public SummaryPayment(PaymentRepository paymentRepository) {
         this.paymentRepository = paymentRepository;
