@@ -6,15 +6,25 @@ scrape_configs:
     scrape_interval: 5s
     static_configs:
       - targets: [ 'prometheus:9090' ]
+
   - job_name: 'rinhaquark'
     scrape_interval: 5s
     metrics_path: '/q/metrics'
     static_configs:
-      - targets: [ 'rinhaquark2025-a:8080' ]
+      - targets: [ 'producer-a:8080' ]
         labels:
           app: rinhaquark
-          instance_name: rinhaquark-a
-      - targets: [ 'rinhaquark2025-b:8080' ]
+          role: producer
+          instance_name: producer-a
+
+      - targets: [ 'producer-b:8080' ]
         labels:
           app: rinhaquark
-          instance_name: rinhaquark-b
+          role: producer
+          instance_name: producer-b
+
+      - targets: [ 'consumer:8080' ]
+        labels:
+          app: rinhaquark
+          role: consumer
+          instance_name: consumer

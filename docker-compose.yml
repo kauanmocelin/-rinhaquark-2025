@@ -1,22 +1,41 @@
-x-rinhaquark2025: &rinhaquark2025
-  image: kauanmocelin/rinhaquark2025:1.0.27
-  environment:
-    - QUARKUS_PAYMENTS_BATCH_SIZE=100
-    - QUARKUS_PAYMENTS_BATCH_INTERVAL_MS=20
-    - QUARKUS_PAYMENTS_THREADS_NUMBER=20
+x-producer: &producer
+  image: kauanmocelin/rinhaquark2025-producer:1.0.1
   depends_on:
-    postgres:
-      condition: service_healthy
+    - redis
   networks:
     - rinhaquark-rede
     - payment-processor
   deploy:
     resources:
       limits:
-        cpus: "0.12"
-        memory: "80MB"
+        cpus: "0.2"
+        memory: "40MB"
 
 services:
+
+  producer-a:
+    <<: *producer
+    container_name: producer-a
+
+  producer-b:
+    <<: *producer
+    container_name: producer-b
+
+  consumer:
+    image: kauanmocelin/rinhaquark2025-consumer:1.0.1
+    container_name: consumer
+    environment:
+      - QUARKUS_WORKER_SIZE=4
+    depends_on:
+      - redis
+    networks:
+      - rinhaquark-rede
+      - payment-processor
+    deploy:
+      resources:
+        limits:
+          cpus: "1.1"
+          memory: "40MB"
 
   nginx:
     image: nginx:alpine
@@ -26,8 +45,8 @@ services:
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
-      - rinhaquark2025-a
-      - rinhaquark2025-b
+      - producer-a
+      - producer-b
     networks:
       - rinhaquark-rede
     deploy:
@@ -36,60 +55,34 @@ services:
           cpus: "0.1"
           memory: "50MB"
 
-  rinhaquark2025-a:
-    <<: *rinhaquark2025
-    container_name: rinhaquark2025-a
-
-  rinhaquark2025-b:
-    <<: *rinhaquark2025
-    container_name: rinhaquark2025-b
-
-  postgres:
-    image: postgres:17-alpine
-    container_name: postgres
-    environment:
-      POSTGRES_DB: payments_db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+  redis:
+    image: redis:8.2.1-alpine
+    container_name: redis
+    #    restart: unless-stopped
     ports:
-      - "5432:5432"
-    volumes:
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
-      - ./postgresql.conf:/etc/postgresql/postgresql.conf
-
+      - "6379:6379"
     networks:
       - rinhaquark-rede
-    command: [ "postgres", "-c", "config_file=/etc/postgresql/postgresql.conf" ]
+    command: [ "redis-server", "--save", "", "--appendonly", "no" ]
     deploy:
       resources:
         limits:
-          cpus: "0.1"
-          memory: "140MB"
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres -d payments_db" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
+          cpus: "0.4"
+          memory: "80MB"
 
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: pgadmin
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: admin
+  redisinsight:
+    image: redislabs/redisinsight:latest
+    container_name: redisinsight
     ports:
-      - "8085:80"
-    depends_on:
-      - postgres
-    volumes:
-      - pgadmin-data:/var/lib/pgadmin
+      - "5540:5540"
     networks:
       - rinhaquark-rede
+    depends_on:
+      - redis
 
-  prometheus-k1:
+  prometheus:
     image: prom/prometheus:v2.26.0
-    container_name: prometheus-k1
+    container_name: prometheus
     ports:
       - 9090:9090
     volumes:
@@ -97,18 +90,16 @@ services:
     command: --config.file=/etc/prometheus/prometheus.yml
     networks:
       - rinhaquark-rede
-  grafana-k1:
+
+  grafana:
     image: grafana/grafana-enterprise
-    container_name: grafana-k1
+    container_name: grafana
     ports:
       - "3000:3000"
     depends_on:
-      - prometheus-k1
+      - prometheus
     networks:
       - rinhaquark-rede
-
-volumes:
-  pgadmin-data:
 
 networks:
   rinhaquark-rede:

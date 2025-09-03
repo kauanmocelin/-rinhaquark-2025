@@ -4,8 +4,8 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>dev.kauanmocelin</groupId>
     <artifactId>rinhaquark-2025</artifactId>
-    <name>RinhaQuark 2025</name>
     <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
 
     <properties>
         <compiler-plugin.version>3.14.0</compiler-plugin.version>
@@ -19,6 +19,11 @@
         <surefire-plugin.version>3.5.3</surefire-plugin.version>
     </properties>
 
+    <modules>
+        <module>producer</module>
+        <module>consumer</module>
+    </modules>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -30,42 +35,6 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
-    <dependencies>
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-rest</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-rest-jackson</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-arc</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-rest-client-jackson</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-jdbc-postgresql</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-container-image-docker</artifactId>
-        </dependency>
-        <!--        <dependency>
-                    <groupId>io.quarkus</groupId>
-                    <artifactId>quarkus-micrometer-registry-prometheus</artifactId>
-                </dependency>-->
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-junit5</artifactId>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
 
     <build>
         <plugins>
@@ -125,18 +94,4 @@
         </plugins>
     </build>
 
-    <profiles>
-        <profile>
-            <id>native</id>
-            <activation>
-                <property>
-                    <name>native</name>
-                </property>
-            </activation>
-            <properties>
-                <skipITs>false</skipITs>
-                <quarkus.native.enabled>true</quarkus.native.enabled>
-            </properties>
-        </profile>
-    </profiles>
 </project>

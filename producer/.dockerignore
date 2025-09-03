@@ -1,0 +1,11 @@
+../.idea
+!*.pdf
+!producer/pom.xml
+!producer/src/**
+!producer/mvnw
+!producer/mvnw.cmd
+!producer/.mvn/**
+!target/*-runner
+!target/*-runner.jar
+!target/lib/*
+!target/quarkus-app/*
