@@ -1,6 +1,7 @@
 # Rinha de Backend 2025 - Quarkus + MongoDB
 
-Implementação do desafio [Rinha de Backend 2025](https://github.com/zanfranceschi/rinha-de-backend-2025) utilizando [Quarkus](https://quarkus.io/), compilação
+Implementação do desafio [Rinha de Backend 2025](https://github.com/zanfranceschi/rinha-de-backend-2025)
+utilizando [Quarkus](https://quarkus.io/), compilação
 nativa com GraalVM, Java 21 e MongoDB.
 
 ## 🔧 Tecnologias
@@ -32,4 +33,8 @@ Para compilar a aplicação como binário nativo:
 ```bash
 ./mvnw clean package -Dnative -Dquarkus.native.container-build=true -DskipTests
 ```
+
+## Arquitetura
+
+![Arquitetura](./system-architecture-diagram.svg)
 
