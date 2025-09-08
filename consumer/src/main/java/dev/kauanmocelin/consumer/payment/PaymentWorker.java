@@ -1,10 +1,10 @@
-package dev.kauanmocelin;
+package dev.kauanmocelin.consumer.payment;
 
+import dev.kauanmocelin.consumer.payment.queue.RedisQueueConsumer;
 import io.quarkus.logging.Log;
 import io.quarkus.runtime.Startup;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.util.concurrent.ExecutorService;
@@ -14,23 +14,25 @@ import java.util.concurrent.Executors;
 @Startup
 public class PaymentWorker {
 
-    @Inject
-    RedisQueueConsumer consumer;
+    private final RedisQueueConsumer consumer;
+    private final ProcessPaymentUseCase processPaymentUseCase;
+    private final String paymentsQueue;
+    private final long workerSize;
+    private final ExecutorService executor;
 
-    @Inject
-    ProcessPaymentUseCase processPaymentUseCase;
-
-    @ConfigProperty(name = "redis.queue.payments.requests")
-    private String paymentsQueue;
-
-    @ConfigProperty(name = "payments.worker.size")
-    long workerSize;
-
-    private final ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
+    public PaymentWorker(RedisQueueConsumer consumer,
+                         ProcessPaymentUseCase processPaymentUseCase,
+                         @ConfigProperty(name = "redis.queue.payments.requests") String paymentsQueue,
+                         @ConfigProperty(name = "payments.worker.size") long workerSize) {
+        this.consumer = consumer;
+        this.processPaymentUseCase = processPaymentUseCase;
+        this.paymentsQueue = paymentsQueue;
+        this.workerSize = workerSize;
+        executor = Executors.newVirtualThreadPerTaskExecutor();
+    }
 
     @PostConstruct
     void onStart() {
-        Log.info("number of worker size: " + workerSize);
         for (int i = 0; i < workerSize; i++) {
             executor.submit(this::dispatchLoop);
         }

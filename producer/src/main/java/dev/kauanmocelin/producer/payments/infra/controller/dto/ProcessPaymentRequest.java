@@ -1,4 +1,4 @@
-package dev.kauanmocelin.producer.payments.infra.controller;
+package dev.kauanmocelin.producer.payments.infra.controller.dto;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 

@@ -1,4 +1,4 @@
-package dev.kauanmocelin.producer.payments.repository;
+package dev.kauanmocelin.producer.payments.infra.repository;
 
 public enum PaymentProcessorType {
     DEFAULT,

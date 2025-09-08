@@ -1,4 +1,4 @@
-package dev.kauanmocelin;
+package dev.kauanmocelin.consumer.payment;
 
 import java.math.BigDecimal;
 import java.time.Instant;

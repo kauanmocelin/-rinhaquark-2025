@@ -30,7 +30,7 @@ public class PaymentsResource {
     @Blocking
     public Uni<Response> processPayment(PaymentRequest paymentRequest) {
         return processPayment.registerPayment(paymentRequest)
-            .replaceWith(Response.ok().build());
+            .replaceWith(Response.accepted().build());
     }
 
     @Path("/payments-summary")

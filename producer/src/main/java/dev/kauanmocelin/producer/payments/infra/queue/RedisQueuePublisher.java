@@ -1,7 +1,7 @@
-package dev.kauanmocelin.producer.payments.infra.adapter;
+package dev.kauanmocelin.producer.payments.infra.queue;
 
 import dev.kauanmocelin.producer.payments.application.QueuePublisher;
-import dev.kauanmocelin.producer.payments.infra.controller.ProcessPaymentRequest;
+import dev.kauanmocelin.producer.payments.infra.controller.dto.ProcessPaymentRequest;
 import io.quarkus.redis.datasource.RedisDataSource;
 import io.quarkus.redis.datasource.list.ListCommands;
 import jakarta.enterprise.context.ApplicationScoped;
