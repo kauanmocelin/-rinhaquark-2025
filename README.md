@@ -16,11 +16,11 @@ The backend is built using [Quarkus](https://quarkus.io/), with **native compila
 
 ## Technologies
 
-- Java 21
-- Quarkus 3
-- Redis
-- GraalVM (native compilation)
-- Docker
+- **Language:** Java 21
+- **Framework:** Quarkus 3 (with Vert.x)
+- **Storage / Queue:** Redis
+- **Compilation:** GraalVM (native)
+- **Containerization:** Docker
 
 ## Features
 
