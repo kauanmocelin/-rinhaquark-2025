@@ -1,40 +1,47 @@
-# Rinha de Backend 2025 - Quarkus + MongoDB
+# Rinha de Backend 2025 - Quarkus(native) with Redis
 
-Implementação do desafio [Rinha de Backend 2025](https://github.com/zanfranceschi/rinha-de-backend-2025)
-utilizando [Quarkus](https://quarkus.io/), compilação
-nativa com GraalVM, Java 21 e MongoDB.
+This project implements a resilient backend for
+the [Rinha de Backend 2025](https://github.com/zanfranceschi/rinha-de-backend-2025) challenge.  
+It handles **payment processing with limited resources**, managing a **high volume of requests** even with minimal
+infrastructure.  
+The main focus is on building a **robust and fault-tolerant system** that can operate reliably under constrained
+conditions.
 
-## 🔧 Tecnologias
+The backend is built using [Quarkus](https://quarkus.io/), with **native compilation via GraalVM**, **Java 21**, and *
+*Redis** for distributed caching.
+
+## System Architecture
+
+![Architecture](docs/system-architecture-diagram.svg)
+
+## Technologies
 
 - Java 21
 - Quarkus 3
-- MongoDB
-- GraalVM (compilação nativa)
+- Redis
+- GraalVM (native compilation)
 - Docker
 
-## 🚀 Executar localmente
+## Features
 
-### Pré-requisitos
+- Resilient payment processing
+- Automatic fallback between gateways
+- Integrated services health checks
+- Redis queue system with asynchronous workers
+- Distributed cache with Redis
 
-- Docker + Docker Compose
-- Java 21
-- `mvn` ou `./mvnw`
+## Getting Started
 
-### Rodar com Quarkus em modo dev
+Follow the steps below to run the project locally:
 
-```bash
-./mvnw quarkus:dev
-```
-
-### ⚙️ Build Nativo
-
-Para compilar a aplicação como binário nativo:
+1. Build the **producer** and **consumer** modules with native GraalVM compilation:
 
 ```bash
-./mvnw clean package -Dnative -Dquarkus.native.container-build=true -DskipTests
+./mvnw clean package
 ```
 
-## Arquitetura
+2. Start the full environment with Docker Compose:
 
-![Arquitetura](./system-architecture-diagram.svg)
-
+```bash
+docker compose up
+```
