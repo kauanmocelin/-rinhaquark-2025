@@ -21,6 +21,7 @@ The backend is built using [Quarkus](https://quarkus.io/), with **native compila
 - **Storage / Queue:** Redis
 - **Compilation:** GraalVM (native)
 - **Containerization:** Docker
+- **Load Balancer:** Nginx
 
 ## Features
 
