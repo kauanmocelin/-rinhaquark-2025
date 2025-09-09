@@ -7,8 +7,8 @@ infrastructure.
 The main focus is on building a **robust and fault-tolerant system** that can operate reliably under constrained
 conditions.
 
-The backend is built using [Quarkus](https://quarkus.io/), with **native compilation via GraalVM**, **Java 21**, and *
-*Redis** for distributed caching.
+The backend is built using [Quarkus](https://quarkus.io/), with **native compilation via GraalVM**, **Java 21**, and
+**Redis** for distributed caching.
 
 ## System Architecture
 
